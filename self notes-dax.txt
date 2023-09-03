@@ -1,0 +1,116 @@
+FILTER
+============
+CREATE A TABLE REGION = "SOUTH",CATEGORY ="OFFICE SUPPLIERS"
+SOUTH-OFFICE-SUPPLY = FILTER(SalesOrder,AND(SalesOrder[Region]="SOUTH" , SalesOrder[Category]="OFFICE SUPPLIES"))
+
+WE CAN USE & AS WELL FOR TWO CONDITION
+FOR MORE THAN 2 CONDITION WE NEED TO USE &&
+==========================
+using measures
+=============
+
+sum of sales for a specific region
+SOUTH-SALES = CALCULATE(SUM(SalesOrder[Sales]),FILTER(SalesOrder,SalesOrder[Region]="south"))
+sum sales>>region="east",category="terchnology"
+EAST-TECHNOLOGY = CALCULATE(SUM(SalesOrder[Sales]),FILTER(SalesOrder,SalesOrder[Region]="EAST" && SalesOrder[Category]="TECHNOLOGY"))
+
+AVERAGE-PROFIT=REGION SOUTH & CATEGORY=FURNITURE
+AvgProfit-SOUTHFURNITURE = CALCULATE(AVERAGE(SalesOrder[Sales]),FILTER(SalesOrder,SalesOrder[Region]="south"
+ && SalesOrder[Category]="FURNITURE"))
+
+DATE AND TIME
+==================
+YEAR = YEAR(SalesOrder[Order Date])
+WEEKNUM = WEEKNUM(SalesOrder[Order Date])
+MONTH = MONTH(SalesOrder[Order Date])
+weekday = WEEKDAY(SalesOrder[Order Date])
+datediff = DATEDIFF(SalesOrder[Order Date],SalesOrder[Ship Date],DAY)
+datediff_year = DATEDIFF(SalesOrder[Order Date],NOW(),YEAR)
+datediff_month = datediff(SalesOrder[Order Date],NOW(),MONTH)
+
+Eomonth = EOMONTH(SalesOrder[Order Date],3)
+
+============================================================
+TIME INTELLIGENCE FUNCTIONS
+ADD_DATE = DATEADD(SalesOrder[Order Date],5,DAY)
+CalenderDates = CALENDAR(Min(SalesOrder[Order Date]),Max(SalesOrder[Order Date]))
+year = year(CalenderDates[Date])
+month = month(CalenderDates[Date])
+quarter = quarter(CalenderDates[Date])
+mark as date table to calender dates..
+PY_SALES = CALCULATE(SUM(SalesOrder[Sales]),PREVIOUSYEAR(CalenderDates[Date]))
+
+another way of previous year sales
+=========================================
+Previousmonthsales = CALCULATE([TotalSales_Superstore],DATEADD('Dim Date'[Date],-1,MONTH))
+
+
+next_yr_sales = calculate(sum(SalesOrder[Sales]),nextyear(CalenderDates[Date]))
+
+YTD>>YEAR TO DATE SALES
+Total_ytd = TOTALYTD(sum(SalesOrder[sales]),CalenderDates[Date])
+
+Total_mtd = TOTALMTD(SUM(SalesOrder[Sales]),CalenderDates[Date])
+=====================
+previous_month = CALCULATE(SUM(SalesOrder[Sales]),PREVIOUSMONTH(CalenderDates[Date]))
+%yoy = DIVIDE(([TotalSales_Superstore]-[Previousyrsales]),[Previousyrsales],BLANK())
+CLOSINGBALMONTH = CLOSINGBALANCEMONTH(SUM(SalesOrder[Sales]),CalenderDates[Date])
+% growth while comaparing 2 year
+
+%yoy = DIVIDE(SUM(SalesOrder[Sales])-CalenderDates[PY_SALES],CalenderDates[PY_SALES])
+
+============================================================================
+logical functions
+================
+if_profit = IF(SalesOrder[Profit]>0,"positive profit","negative profit")
+if_01 = if(SalesOrder[Profit]<0,"zero profit",if(SalesOrder[Profit]>0,"positive profit","negative profit"))
+
+if_02 = IF(AND(SalesOrder[Sales]>10000,SalesOrder[Profit]>1000),"high profit","low profit")
+if_03 = if(SalesOrder[Sales]>10000 && SalesOrder[Profit]>1000,"high profit","low profit")
+===============================================================
+text functions
+================
+length = LEN(Returns[Order ID])
+FIND = FIND("-",Returns[Order ID],1,BLANK())
+SEARCH = SEARCH("2017",Returns[Order ID],1,0)
+>>FIND IS CASE SENSITIVE  N SEARCH IS NOT CASE SENSITIVE
+REPLACE = REPLACE(Returns[Order ID],1,2,"CANADA")
+SUBS = SUBSTITUTE(Returns[Order ID],"CA","CANADA")
+SUBS_01 = SUBSTITUTE(Returns[Order ID],"-",":",2)  >>>IF WE WANT TO REPLACE AT SPECIFIC OCCURANCE..
+SUBS_02 = SUBSTITUTE(Returns[Order ID],"-","")
+===============================================
+CREATE A TABLE AND USING FILTER
+FILTER_FURNITURE = FILTER(SalesOrder,SalesOrder[Category]="FURNITURE")
+FILTER_TECHNOLOGY = FILTER(SalesOrder,SalesOrder[Category]="TECHNOLOGY")
+
+=====================================================
+UNION>>USED TO APPEND TWO TABLE
+UNION_TABLE = UNION(FILTER_FURNITURE,FILTER_TECHNOLOGY) >> IT IS APPENDING TWO TABLES.
+INTERSECTION
+EXCEPT
+=========================================================
+STATISTICAL FUNCTION>>>>CALCULATE MEASURES MOSTLY
+==========================================================
+MAX_SALES_CENTRAL = CALCULATE(MAX(SalesOrder[Sales]),FILTER(SalesOrder,SalesOrder[Region]="Central"))
+
+** sometimes we want visual to display same value irrespective of the filter so we use all operator
+max_all_sales = calculate(max(SalesOrder[Sales]),all())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
